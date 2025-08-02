@@ -14,8 +14,16 @@ async function createQueueAndUser(req, res) {
 async function getQueuePage(req, res) {
   const { routeId } = req.params;
   const owners = await getUsers(routeId, "owner");
-  res.json({ owners: owners });
+  const members = await getUsers(routeId, "member");
+  res.json({ owners: owners, members: members });
 
 };
 
-module.exports = { createQueueAndUser, getQueuePage };
+async function createMember(req, res) {
+  const { username, password, queueId } = req.body;
+  const queue = await getQueue(queueId);
+  await createUser(username, password, "member", queue._id);
+  res.json({ message: "Member creation successful"});
+}
+
+module.exports = { createQueueAndUser, getQueuePage, createMember };
